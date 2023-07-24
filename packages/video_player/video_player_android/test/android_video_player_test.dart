@@ -5,6 +5,7 @@
 // TODO(a14n): remove this import once Flutter 3.1 or later reaches stable (including flutter/flutter#106316)
 // ignore: unnecessary_import
 import 'dart:ui';
+import 'dart:typed_data';
 
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -147,6 +148,7 @@ void main() {
       expect(log.createMessage?.packageName, null);
       expect(log.createMessage?.formatHint, 'dash');
       expect(log.createMessage?.httpHeaders, <String, String>{});
+      expect(log.createMessage?.certificates, null);
       expect(textureId, 3);
     });
 
@@ -163,6 +165,28 @@ void main() {
       expect(log.createMessage?.formatHint, null);
       expect(log.createMessage?.httpHeaders,
           <String, String>{'Authorization': 'Bearer token'});
+      expect(log.createMessage?.certificates, null);
+      expect(textureId, 3);
+    });
+
+    test('create with network (custom ssl)', () async {
+      final int? textureId = await player.create(DataSource(
+        sourceType: DataSourceType.network,
+        uri: 'someUri',
+        formatHint: VideoFormat.dash,
+        certificates: [
+          Uint8List.fromList([0, 1, 2])
+        ],
+      ));
+      expect(log.log.last, 'create');
+      expect(log.createMessage?.asset, null);
+      expect(log.createMessage?.uri, 'someUri');
+      expect(log.createMessage?.packageName, null);
+      expect(log.createMessage?.formatHint, 'dash');
+      expect(log.createMessage?.httpHeaders, <String, String>{});
+      expect(log.createMessage?.certificates, [
+        Uint8List.fromList([0, 1, 2])
+      ]);
       expect(textureId, 3);
     });
 

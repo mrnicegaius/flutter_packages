@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import 'dart:typed_data';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/widgets.dart';
 import 'package:plugin_platform_interface/plugin_platform_interface.dart';
@@ -127,6 +128,10 @@ class DataSource {
   ///
   /// The [package] argument must be non-null when the asset comes from a
   /// package and null otherwise.
+  ///
+  /// The [certificates] argument can be null, and is a list of SSL
+  /// certificates to use to validate the HTTPS connection. If no list is given,
+  /// the default certificate authorities are used.
   DataSource({
     required this.sourceType,
     this.uri,
@@ -134,6 +139,7 @@ class DataSource {
     this.asset,
     this.package,
     this.httpHeaders = const <String, String>{},
+    this.certificates,
   });
 
   /// The way in which the video was originally loaded.
@@ -163,6 +169,10 @@ class DataSource {
   /// The package that the asset was loaded from. Only set for
   /// [DataSourceType.asset] videos.
   final String? package;
+
+  /// Optionally set for network connections, provides a list of ssl
+  /// certificates for validation
+  final List<Uint8List>? certificates;
 }
 
 /// The way in which the video was originally loaded.

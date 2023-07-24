@@ -7,6 +7,7 @@
 
 import 'dart:async';
 import 'dart:io';
+import 'dart:typed_data';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -196,6 +197,10 @@ class MiniController extends ValueNotifier<VideoPlayerValue> {
   /// Only set for [asset] videos. The package that the asset was loaded from.
   final String? package;
 
+  /// Optionally set for network connections, provides a list of ssl
+  /// certificates for validation
+  List<Uint8List>? _certificates;
+
   Timer? _timer;
   Completer<void>? _creatingCompleter;
   StreamSubscription<dynamic>? _eventSubscription;
@@ -227,6 +232,7 @@ class MiniController extends ValueNotifier<VideoPlayerValue> {
         dataSourceDescription = DataSource(
           sourceType: DataSourceType.network,
           uri: dataSource,
+          certificates: _certificates,
         );
         break;
       case DataSourceType.file:
@@ -373,6 +379,18 @@ class MiniController extends ValueNotifier<VideoPlayerValue> {
 
   void _updatePosition(Duration position) {
     value = value.copyWith(position: position);
+  }
+
+  void setTrustedCertificateBytes(List<int> certBytes) {
+    final bytes = (certBytes is Uint8List)
+        ? (certBytes as Uint8List)
+        : Uint8List.fromList(certBytes);
+
+    if (_certificates == null) {
+      _certificates = List.empty(growable: true);
+    }
+
+    _certificates?.add(bytes);
   }
 }
 

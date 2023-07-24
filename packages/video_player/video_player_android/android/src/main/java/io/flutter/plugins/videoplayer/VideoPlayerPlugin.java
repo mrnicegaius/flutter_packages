@@ -22,11 +22,16 @@ import io.flutter.plugins.videoplayer.Messages.PositionMessage;
 import io.flutter.plugins.videoplayer.Messages.TextureMessage;
 import io.flutter.plugins.videoplayer.Messages.VolumeMessage;
 import io.flutter.view.TextureRegistry;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.security.KeyManagementException;
 import java.security.NoSuchAlgorithmException;
 import java.util.HashMap;
 import java.util.Map;
+import javax.net.ssl.HostnameVerifier;
 import javax.net.ssl.HttpsURLConnection;
+import javax.net.ssl.SSLSession;
+import javax.net.ssl.SSLSocketFactory;
 
 /** Android platform implementation of the VideoPlayerPlugin. */
 public class VideoPlayerPlugin implements FlutterPlugin, AndroidVideoPlayerApi {
@@ -142,8 +147,30 @@ public class VideoPlayerPlugin implements FlutterPlugin, AndroidVideoPlayerApi {
               "asset:///" + assetLookupKey,
               null,
               new HashMap<>(),
+              null,
+              null,
               options);
     } else {
+      SSLSocketFactory factory = null;
+      HostnameVerifier verifier = null;
+
+      if (arg.getCertificates() != null) {
+        SSLBuilder builder = new SSLBuilder();
+        String host = getUriHost(arg.getUri());
+
+        for (byte[] cert : arg.getCertificates()) {
+          builder.addCertificate(cert);
+        }
+        factory = builder.socketFactoryIfReq();
+        verifier =
+            new HostnameVerifier() {
+              public boolean verify(String hostname, SSLSession session) {
+                if (host != null && hostname.equalsIgnoreCase(host)) return true;
+                return hostname.equals(session.getPeerHost());
+              }
+            };
+      }
+
       Map<String, String> httpHeaders = arg.getHttpHeaders();
       player =
           new VideoPlayer(
@@ -153,6 +180,8 @@ public class VideoPlayerPlugin implements FlutterPlugin, AndroidVideoPlayerApi {
               arg.getUri(),
               arg.getFormatHint(),
               httpHeaders,
+              factory,
+              verifier,
               options);
     }
     videoPlayers.put(handle.id(), player);
@@ -246,6 +275,14 @@ public class VideoPlayerPlugin implements FlutterPlugin, AndroidVideoPlayerApi {
 
     void stopListening(BinaryMessenger messenger) {
       AndroidVideoPlayerApi.setup(messenger, null);
+    }
+  }
+
+  private static String getUriHost(String urlString) {
+    try {
+      return (new URL(urlString)).getHost();
+    } catch (MalformedURLException e) {
+      return null;
     }
   }
 }

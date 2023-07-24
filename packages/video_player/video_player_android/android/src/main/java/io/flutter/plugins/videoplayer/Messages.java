@@ -16,6 +16,7 @@ import io.flutter.plugin.common.StandardMessageCodec;
 import java.io.ByteArrayOutputStream;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 /** Generated class from Pigeon. */
@@ -469,6 +470,16 @@ public class Messages {
       this.httpHeaders = setterArg;
     }
 
+    private @Nullable List<byte[]> certificates;
+
+    public @Nullable List<byte[]> getCertificates() {
+      return certificates;
+    }
+
+    public void setCertificates(@Nullable List<byte[]> setterArg) {
+      this.certificates = setterArg;
+    }
+
     /** Constructor is non-public to enforce null safety; use Builder. */
     CreateMessage() {}
 
@@ -509,6 +520,13 @@ public class Messages {
         return this;
       }
 
+      private @Nullable List<byte[]> certificates;
+
+      public @NonNull Builder setCertificates(@Nullable List<byte[]> setterArg) {
+        this.certificates = setterArg;
+        return this;
+      }
+
       public @NonNull CreateMessage build() {
         CreateMessage pigeonReturn = new CreateMessage();
         pigeonReturn.setAsset(asset);
@@ -516,6 +534,7 @@ public class Messages {
         pigeonReturn.setPackageName(packageName);
         pigeonReturn.setFormatHint(formatHint);
         pigeonReturn.setHttpHeaders(httpHeaders);
+        pigeonReturn.setCertificates(certificates);
         return pigeonReturn;
       }
     }
@@ -528,6 +547,7 @@ public class Messages {
       toListResult.add(packageName);
       toListResult.add(formatHint);
       toListResult.add(httpHeaders);
+      toListResult.add(certificates);
       return toListResult;
     }
 
@@ -543,6 +563,8 @@ public class Messages {
       pigeonResult.setFormatHint((String) formatHint);
       Object httpHeaders = list.get(4);
       pigeonResult.setHttpHeaders((Map<String, String>) httpHeaders);
+      Object certificates = list.get(5);
+      pigeonResult.setCertificates((List<byte[]>) certificates);
       return pigeonResult;
     }
   }

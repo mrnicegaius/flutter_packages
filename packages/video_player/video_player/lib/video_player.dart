@@ -5,6 +5,7 @@
 import 'dart:async';
 import 'dart:io';
 import 'dart:math' as math;
+import 'dart:typed_data';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -358,6 +359,10 @@ class VideoPlayerController extends ValueNotifier<VideoPlayerValue> {
   /// Only set for [asset] videos. The package that the asset was loaded from.
   final String? package;
 
+  /// Optionally set for network connections, provides a list of ssl
+  /// certificates for validation
+  List<Uint8List>? _certificates;
+
   Future<ClosedCaptionFile>? _closedCaptionFileFuture;
   ClosedCaptionFile? _closedCaptionFile;
   Timer? _timer;
@@ -401,6 +406,7 @@ class VideoPlayerController extends ValueNotifier<VideoPlayerValue> {
           uri: dataSource,
           formatHint: formatHint,
           httpHeaders: httpHeaders,
+          certificates: _certificates,
         );
         break;
       case DataSourceType.file:
@@ -738,6 +744,23 @@ class VideoPlayerController extends ValueNotifier<VideoPlayerValue> {
       position: position,
       caption: _getCaptionAt(position),
     );
+  }
+
+  /// Add a certificate to the set of trusted X509 certificates used by the
+  /// video player controller to validate https content.
+  ///
+  /// This function call only works if its called before the video player is
+  /// initialized.  This is supported on Android only currently.
+  void setTrustedCertificateBytes(List<int> certBytes) {
+    final bytes = (certBytes is Uint8List)
+        ? (certBytes as Uint8List)
+        : Uint8List.fromList(certBytes);
+
+    if (_certificates == null) {
+      _certificates = List.empty(growable: true);
+    }
+
+    _certificates?.add(bytes);
   }
 
   @override

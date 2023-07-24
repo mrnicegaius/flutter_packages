@@ -49,6 +49,7 @@ class CreateMessage {
   String? packageName;
   String? formatHint;
   Map<String?, String?> httpHeaders;
+  List<Uint8List?>? certificates;
 }
 
 class MixWithOthersMessage {

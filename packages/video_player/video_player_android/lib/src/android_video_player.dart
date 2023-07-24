@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 import 'dart:async';
+import 'dart:typed_data';
 
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
@@ -37,6 +38,7 @@ class AndroidVideoPlayer extends VideoPlayerPlatform {
     String? uri;
     String? formatHint;
     Map<String, String> httpHeaders = <String, String>{};
+    List<Uint8List>? certificates;
     switch (dataSource.sourceType) {
       case DataSourceType.asset:
         asset = dataSource.asset;
@@ -46,6 +48,7 @@ class AndroidVideoPlayer extends VideoPlayerPlatform {
         uri = dataSource.uri;
         formatHint = _videoFormatStringMap[dataSource.formatHint];
         httpHeaders = dataSource.httpHeaders;
+        certificates = dataSource.certificates;
         break;
       case DataSourceType.file:
         uri = dataSource.uri;
@@ -61,6 +64,7 @@ class AndroidVideoPlayer extends VideoPlayerPlatform {
       uri: uri,
       httpHeaders: httpHeaders,
       formatHint: formatHint,
+      certificates: certificates,
     );
 
     final TextureMessage response = await _api.create(message);

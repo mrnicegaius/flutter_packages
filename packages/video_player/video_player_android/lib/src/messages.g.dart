@@ -143,6 +143,7 @@ class CreateMessage {
     this.packageName,
     this.formatHint,
     required this.httpHeaders,
+    this.certificates,
   });
 
   String? asset;
@@ -155,6 +156,8 @@ class CreateMessage {
 
   Map<String?, String?> httpHeaders;
 
+  List<Uint8List?>? certificates;
+
   Object encode() {
     return <Object?>[
       asset,
@@ -162,6 +165,7 @@ class CreateMessage {
       packageName,
       formatHint,
       httpHeaders,
+      certificates,
     ];
   }
 
@@ -174,6 +178,7 @@ class CreateMessage {
       formatHint: result[3] as String?,
       httpHeaders:
           (result[4] as Map<Object?, Object?>?)!.cast<String?, String?>(),
+      certificates: (result[5] as List<Object?>?)?.cast<Uint8List?>(),
     );
   }
 }

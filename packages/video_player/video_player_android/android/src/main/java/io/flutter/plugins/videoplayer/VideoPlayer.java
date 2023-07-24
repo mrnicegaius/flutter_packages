@@ -30,7 +30,6 @@ import com.google.android.exoplayer2.source.smoothstreaming.DefaultSsChunkSource
 import com.google.android.exoplayer2.source.smoothstreaming.SsMediaSource;
 import com.google.android.exoplayer2.upstream.DataSource;
 import com.google.android.exoplayer2.upstream.DefaultDataSource;
-import com.google.android.exoplayer2.upstream.DefaultHttpDataSource;
 import com.google.android.exoplayer2.util.Util;
 import io.flutter.plugin.common.EventChannel;
 import io.flutter.view.TextureRegistry;
@@ -39,6 +38,8 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import javax.net.ssl.HostnameVerifier;
+import javax.net.ssl.SSLSocketFactory;
 
 final class VideoPlayer {
   private static final String FORMAT_SS = "ss";
@@ -71,6 +72,8 @@ final class VideoPlayer {
       String dataSource,
       String formatHint,
       @NonNull Map<String, String> httpHeaders,
+      SSLSocketFactory factory,
+      HostnameVerifier hostnameVerifier,
       VideoPlayerOptions options) {
     this.eventChannel = eventChannel;
     this.textureEntry = textureEntry;
@@ -80,6 +83,8 @@ final class VideoPlayer {
     Uri uri = Uri.parse(dataSource);
 
     buildHttpDataSourceFactory(httpHeaders);
+    httpDataSourceFactory.setSSLSocketFactory(factory);
+    httpDataSourceFactory.setHostnameVerifier(hostnameVerifier);
     DataSource.Factory dataSourceFactory =
         new DefaultDataSource.Factory(context, httpDataSourceFactory);
 
