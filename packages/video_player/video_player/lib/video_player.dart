@@ -381,6 +381,10 @@ class VideoPlayerController extends ValueNotifier<VideoPlayerValue> {
   @visibleForTesting
   int get textureId => _textureId;
 
+  /// 2026 upgrade: alias of [textureId]. chewie 1.18 references `playerId` (the
+  /// canonical video_player name for the same underlying platform handle).
+  int get playerId => _textureId;
+
   /// Attempts to open the given [dataSource] and load metadata about the video.
   Future<void> initialize() async {
     final bool allowBackgroundPlayback =
